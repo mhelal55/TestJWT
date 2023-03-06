@@ -1,4 +1,6 @@
-﻿namespace TestJWT.Models
+﻿using System.Text.Json.Serialization;
+
+namespace TestJWT.Models
 {
     public class AuthModel
     {
@@ -8,7 +10,11 @@
         public string Token { get; set; }
         public List<string> Roles { get; set; }
         public bool IsAuthenticated { get; set; }
-        public DateTime ExpireOn { get; set; }
+        //public DateTime ExpireOn { get; set; }
+
+        [JsonIgnore]
+        public string RefreshToken { get; set; }
+        public DateTime RefreshTokenExpiration { get; set; }
 
     }
 }
