@@ -66,7 +66,7 @@ namespace TestJWT.Services
             authModel.Token = new JwtSecurityTokenHandler().WriteToken(JwtSecurityToken);
             authModel.Email = user.Email;
             authModel.UserName = user.UserName;
-            //authModel.ExpireOn = JwtSecurityToken.ValidTo;
+            authModel.ExpireOn = JwtSecurityToken.ValidTo;
             authModel.Roles = roleResult.ToList();
 
 
@@ -169,8 +169,8 @@ namespace TestJWT.Services
             return new AuthModel
             {
                 Email = user.Email,
-                //ExpireOn=JwtSecurityToken.ValidTo,
-                IsAuthenticated=true,
+                ExpireOn = JwtSecurityToken.ValidTo,
+                IsAuthenticated =true,
                 Roles=new List<string> {"User" },
                 Token=new JwtSecurityTokenHandler().WriteToken(JwtSecurityToken),   
                 UserName=user.UserName,
