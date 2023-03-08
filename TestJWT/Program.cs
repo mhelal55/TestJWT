@@ -5,7 +5,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TestJWT.Helpers;
 using TestJWT.Models;
-using TestJWT.Services;
+using TestJWT.Services.Abstract;
+using TestJWT.Services.implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -10,7 +10,7 @@ using TestJWT.Models;
 using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 
-namespace TestJWT.Services
+namespace TestJWT.Services.implementation
 {
     public class AuthServices : IAuthServices
     {
@@ -28,30 +28,30 @@ namespace TestJWT.Services
         public async Task<string> AddRoleAsync(AddRoleModel model)
         {
             var user = await _userManager.FindByIdAsync(model.UserId);
-            if (user == null|| !await _roleManager.RoleExistsAsync(model.Role))
+            if (user == null || !await _roleManager.RoleExistsAsync(model.Role))
             {
                 return "Invalid userId or role";
             }
 
-            if (await _userManager.IsInRoleAsync(user,model.Role))
+            if (await _userManager.IsInRoleAsync(user, model.Role))
             {
                 return "user is already assign to this role";
 
             }
-            var result=await _userManager.AddToRoleAsync(user,model.Role);
+            var result = await _userManager.AddToRoleAsync(user, model.Role);
 
-            return result.Succeeded? string.Empty: "something went wrong";
+            return result.Succeeded ? string.Empty : "something went wrong";
         }
 
         public async Task<AuthModel> GetTokenAsync(TokenRequestModel model)
         {
-            var authModel=new AuthModel();
+            var authModel = new AuthModel();
 
-            var user=await _userManager.FindByEmailAsync(model.Email);
+            var user = await _userManager.FindByEmailAsync(model.Email);
 
 
 
-            if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password) )
+            if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 authModel.Message = "Email or Password is incorrect";
                 return authModel;
@@ -70,7 +70,7 @@ namespace TestJWT.Services
             authModel.Roles = roleResult.ToList();
 
 
-            if (user.RefreshTokens.Any(t=>t.IsActived))
+            if (user.RefreshTokens.Any(t => t.IsActived))
             {
                 var activeRefreshToken = user.RefreshTokens.FirstOrDefault(t => t.IsActived);
                 authModel.RefreshToken = activeRefreshToken.Token;
@@ -88,14 +88,14 @@ namespace TestJWT.Services
 
 
             return authModel;
-        
+
         }
 
         public async Task<AuthModel> RefreshTokenAsync(string Token)
         {
-            var authModel=new AuthModel();
+            var authModel = new AuthModel();
 
-            var user=await _userManager.Users.SingleOrDefaultAsync(u=>u.RefreshTokens.Any(t=>t.Token==Token));
+            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == Token));
 
             if (user == null)
             {
@@ -111,26 +111,26 @@ namespace TestJWT.Services
                 return authModel;
             }
 
-            refreshToken.RevokedOn= DateTime.UtcNow;
+            refreshToken.RevokedOn = DateTime.UtcNow;
             var newRefreshToken = GenerateRefreshToken();
             user.RefreshTokens.Add(newRefreshToken);
             await _userManager.UpdateAsync(user);
 
             var JwtToken = await CreateJwtToken(user);
 
-            authModel.IsAuthenticated= true;
+            authModel.IsAuthenticated = true;
             authModel.Token = new JwtSecurityTokenHandler().WriteToken(JwtToken);
-            authModel.Email= user.Email;
-            authModel.UserName= user.UserName;
+            authModel.Email = user.Email;
+            authModel.UserName = user.UserName;
 
-            var roles=await _userManager.GetRolesAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
 
-            authModel.Roles= roles.ToList();
+            authModel.Roles = roles.ToList();
             authModel.RefreshToken = newRefreshToken.Token;
             authModel.RefreshTokenExpiration = newRefreshToken.ExpiresOn;
 
             return authModel;
-        
+
         }
 
         public async Task<AuthModel> RegisterAsync(RegisterModel model)
@@ -151,7 +151,7 @@ namespace TestJWT.Services
                 LastName = model.LastName,
                 Email = model.Email,
             };
-           var result= await _userManager.CreateAsync(user,model.Passsword);
+            var result = await _userManager.CreateAsync(user, model.Passsword);
 
             if (!result.Succeeded)
             {
@@ -170,10 +170,10 @@ namespace TestJWT.Services
             {
                 Email = user.Email,
                 ExpireOn = JwtSecurityToken.ValidTo,
-                IsAuthenticated =true,
-                Roles=new List<string> {"User" },
-                Token=new JwtSecurityTokenHandler().WriteToken(JwtSecurityToken),   
-                UserName=user.UserName,
+                IsAuthenticated = true,
+                Roles = new List<string> { "User" },
+                Token = new JwtSecurityTokenHandler().WriteToken(JwtSecurityToken),
+                UserName = user.UserName,
             };
         }
 
@@ -191,7 +191,7 @@ namespace TestJWT.Services
 
             if (!refreshToken.IsActived)
             {
-                
+
                 return false;
             }
 
@@ -240,12 +240,13 @@ namespace TestJWT.Services
             using var generator = new RNGCryptoServiceProvider();
             generator.GetBytes(RandomNumber);
 
-            return new RefreshToken {
-              Token=Convert.ToBase64String(RandomNumber),
-              ExpiresOn= DateTime.UtcNow.AddDays(10),
-              CreatedOn= DateTime.UtcNow,
+            return new RefreshToken
+            {
+                Token = Convert.ToBase64String(RandomNumber),
+                ExpiresOn = DateTime.UtcNow.AddDays(10),
+                CreatedOn = DateTime.UtcNow,
 
-             
+
             };
         }
     }

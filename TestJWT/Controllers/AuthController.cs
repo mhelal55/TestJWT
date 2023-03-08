@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TestJWT.Models;
-using TestJWT.Services;
+using TestJWT.Services.Abstract;
 
 namespace TestJWT.Controllers
 {

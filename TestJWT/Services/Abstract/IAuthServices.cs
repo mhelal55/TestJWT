@@ -1,11 +1,11 @@
 ﻿using TestJWT.Models;
 
-namespace TestJWT.Services
+namespace TestJWT.Services.Abstract
 {
     public interface IAuthServices
     {
-        Task<AuthModel>RegisterAsync(RegisterModel model);
-        Task<AuthModel>GetTokenAsync(TokenRequestModel model);
+        Task<AuthModel> RegisterAsync(RegisterModel model);
+        Task<AuthModel> GetTokenAsync(TokenRequestModel model);
 
         Task<string> AddRoleAsync(AddRoleModel model);
 
